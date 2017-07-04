@@ -11,4 +11,8 @@ import scrapy
 class AndroidappscrapyItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    title = scrapy.Field()    # 标题
+    link = scrapy.Field()     # 链接
+    desc = scrapy.Field()     # 简述
+    posttime = scrapy.Field() # 发布时间
     pass

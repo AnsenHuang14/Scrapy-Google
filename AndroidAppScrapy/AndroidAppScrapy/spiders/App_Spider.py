@@ -11,8 +11,11 @@ def read_url(path='.\\URL.txt'):
 
 class App_Spider(scrapy.Spider):
     name = "App_Spider"
-    start_urls = read_url()
     allowed_domains = ["play.google.com"]
+
+    def __init__(self,path, *args,**kwargs):
+        super(App_Spider, self).__init__(*args, **kwargs)
+        self.start_urls = read_url(path)
     
     def parse(self, response):
         app = AndroidappscrapyItem()
@@ -42,16 +45,31 @@ class App_Spider(scrapy.Spider):
         
         app['similarApps'] = similar_app
         app['operatingSystems'] = response.xpath('//div[@itemprop="operatingSystems"]/text()')[0].extract().replace(' ','')
-        app['ads'] = response.xpath('//span[@class="ads-supported-label-msg"]/text()')[0].extract()
-        app['whatsNew'] = response.xpath('//div[@class="recent-change"]/text()')[0].extract()
+        
+        if len(response.xpath('//span[@class="ads-supported-label-msg"]/text()'))==0:
+            app['ads'] = ''
+        else:
+            app['ads'] = response.xpath('//span[@class="ads-supported-label-msg"]/text()')[0].extract()
+        
+        if len(response.xpath('//div[@class="recent-change"]/text()'))==0:
+            app['whatsNew'] = ''
+        else:
+            app['whatsNew'] = response.xpath('//div[@class="recent-change"]/text()')[0].extract()
+
         if len(response.xpath('//div[@class="inapp-msg"]/text()'))==0:
             app['inAppMsg'] = ''
         else:
             app['inAppMsg'] = response.xpath('//div[@class="inapp-msg"]/text()')[0].extract()
+        
         app['price'] =  response.xpath('//meta[@itemprop="price"]//@content')[0].extract()
         app['LogoUrl'] =  response.xpath('//img[@class="cover-image"]//@src')[0].extract()
         app['ClkUrl'] =  response.url
-        app['mail'] =  response.xpath('//a[@class="dev-link"]//@href')[1].extract().split(':')[1]
+        
+        if len(response.xpath('//a[@class="dev-link"]//@href'))==0:
+            app['mail'] = ''
+        else:
+            app['mail'] =  response.xpath('//a[@class="dev-link"]//@href').extract()
+        
         app['Thumbnails'] =  response.xpath('//img[@itemprop="screenshot"]//@src')[0].extract()
         app['Desc'] =  response.xpath('//div[@jsname="C4s9Ed"]/text()')[0].extract()
         app['Rating'] =  response.xpath('//div[@class="current-rating"]//@style')[0].extract().replace(';','').replace('width','').replace(' ','')

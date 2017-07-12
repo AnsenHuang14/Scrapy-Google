@@ -2,7 +2,7 @@ from AndroidAppScrapy.items import AndroidappscrapyItem
 import scrapy
 
 
-def read_url(path='.\\URL.txt'):
+def read_url(path=''):
     start_urls = list()
     with open(path, 'rb') as f:
         start_urls.append(f.read())
@@ -27,8 +27,8 @@ class App_Spider(scrapy.Spider):
         score_number = list()
         for s in response.xpath('//span[@class="bar-number"]/text()'):
             score_number.append(s.extract().replace(',',''))
-        
         app['ratingHistogram'] = score_number
+
         app['comp'] = response.xpath('//span[@itemprop="name"]/text()')[0].extract()
         app['datePublished'] = response.xpath('//div[@itemprop="datePublished"]/text()')[0].extract()
         app['numDownloads'] = response.xpath('//div[@itemprop="numDownloads"]/text()')[0].extract()
@@ -42,8 +42,8 @@ class App_Spider(scrapy.Spider):
         similar_app = list()
         for s in response.xpath('//span[@class="preview-overlay-container"]//@data-docid'):
             similar_app.append(s.extract())
-        
         app['similarApps'] = similar_app
+        
         app['operatingSystems'] = response.xpath('//div[@itemprop="operatingSystems"]/text()')[0].extract().replace(' ','')
         
         if len(response.xpath('//span[@class="ads-supported-label-msg"]/text()'))==0:

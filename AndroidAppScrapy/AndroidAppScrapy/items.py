@@ -11,8 +11,7 @@ import scrapy
 class AndroidappscrapyItem(scrapy.Item) :
     # define the fields for your item here like: 
     # name = scrapy.Field()
-	link = scrapy.Field()
-	category = scrapy.Field()
+	crawlDate = scrapy.Field()
 	
 	PkgName = scrapy.Field()
 	Title = scrapy.Field()

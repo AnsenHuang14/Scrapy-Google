@@ -1,6 +1,6 @@
 from AndroidAppScrapy.items import AndroidappscrapyItem
 import scrapy
-
+from datetime import datetime
 
 def read_url(path=''):
     start_urls = list()
@@ -16,9 +16,13 @@ class App_Spider(scrapy.Spider):
     def __init__(self,path, *args,**kwargs):
         super(App_Spider, self).__init__(*args, **kwargs)
         self.start_urls = read_url(path)
-    
+        self.date = datetime.now().strftime('%Y%m%d')
+        
     def parse(self, response):
         app = AndroidappscrapyItem()
+
+        app['crawlDate'] = self.date
+
         app['PkgName'] = response.url.split('=')[1].replace('&hl','')
         app['Title'] = response.xpath('//div[@class="id-app-title"]/text()')[0].extract()
         app['genre'] = response.xpath('//span[@itemprop="genre"]/text()')[0].extract()
@@ -32,8 +36,8 @@ class App_Spider(scrapy.Spider):
         app['comp'] = response.xpath('//span[@itemprop="name"]/text()')[0].extract()
         app['datePublished'] = response.xpath('//div[@itemprop="datePublished"]/text()')[0].extract()
         app['numDownloads'] = response.xpath('//div[@itemprop="numDownloads"]/text()')[0].extract()
-        app['ratingValue'] =  response.xpath('//div[@itemprop="contentRating"]/text()')[0].extract()
-        app['contentRating'] = app['ratingValue'] 
+        app['ratingValue'] =  response.xpath('//div[@class="score"]/text()')[0].extract()
+        app['contentRating'] = response.xpath('//div[@itemprop="contentRating"]/text()')[0].extract()
         app['Reviewers'] = response.xpath('//span[@class="reviews-num"]/text()')[0].extract()
         app['softwareVersion'] = response.xpath('//div[@itemprop="softwareVersion"]/text()')[0].extract()
         app['GpCategory'] =  app['genre']
